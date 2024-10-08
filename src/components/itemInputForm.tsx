@@ -19,7 +19,7 @@ export default function ItemInput(props: Props) {
         "Hats&Wigs",
         "Jewelry",
         "Kitchen",
-        "Living Room",
+        "LivingRoom",
         "PersonalProps",
         "SetDressing",
         "Shoes",
