@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MouseEventHandler } from "react";
 import TagDropdown from "./tagDropdown";
 import { revalidatePaths } from "@/app/actions";
+import { SignedIn } from '@clerk/nextjs'
 
 export default function TagEditor({ itemId, tags, initialTags }: { itemId: number, tags: string[], initialTags: string[] }) {
     const [selectedTags, setSelectedTags] = useState(initialTags);
@@ -44,9 +45,12 @@ export default function TagEditor({ itemId, tags, initialTags }: { itemId: numbe
             </span>
         ))}
         </div> }
-        {!editing && <button className="border-2 border-orange-400 rounded-lg px-6 py-2 bg-orange-50 text-orange-600"
-                onClick={btnClick}>
-            Edit Tags</button> }
+        {!editing && 
+            <SignedIn>
+                <button className="border-2 border-orange-400 rounded-lg px-6 py-2 bg-orange-50 text-orange-600"
+                    onClick={btnClick}>
+                Edit Tags</button> 
+            </SignedIn>}
         { editing &&
             <div className="w-full border border-orange-400 rounded-lg">
             <TagDropdown tags={tags} selectedTags={selectedTags} setSelectedTags={setSelectedTags}/>
@@ -55,4 +59,3 @@ export default function TagEditor({ itemId, tags, initialTags }: { itemId: numbe
         }
     </>);
 }
-

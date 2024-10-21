@@ -3,7 +3,7 @@ import React from "react";
 import logo from "@/../public/taf-logo.png";
 import { Home, Plus } from "./icons";
 
-import { UserButton } from "@clerk/nextjs";
+import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 
 export default function Header() {
@@ -46,7 +46,13 @@ export default function Header() {
                     <a href="/inventory"><Home width={24} height={24} className="text-white" /></a>
                     <a href="/item-upload"><Plus width={24} height={24} className="text-white" /></a>
                 </div>
-                <UserButton />
+
+                <SignedOut>
+                    <SignInButton />
+                </SignedOut>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
             </div>
         </div>
     );
