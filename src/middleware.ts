@@ -1,43 +1,12 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-export default authMiddleware({
-    // Routes that can be accessed while signed out
-    //trying to have test-comments page not publically accessable
-    publicRoutes: [
-        "/api",
-        "/collection-filter-test",
-        "/CollectionViewSandbox",
-        "/comments",
-        "/item",
-        "/item-detail-test",
-        "/itemInputSandbox",
-        "/preview",
-        "/resizeableSandbox",
-        "/tag-dropdown-test",
-        "/test-grid",
-        "/user-summary",
-        "/userSandbox",
-        "/",
-    ],
-    // Routes that can always be accessed, and have
-    // no authentication information
-    ignoredRoutes: [
-        "/api",
-        "/collection-filter-test",
-        "/CollectionViewSandbox",
-        "/comments",
-        "/item",
-        "/item-detail-test",
-        "/itemInputSandbox",
-        "/preview",
-        "/resizeableSandbox",
-        "/tag-dropdown-test",
-        "/test-grid",
-        "/user-summary",
-        "/userSandbox",
-        "/",
-    ],
-});
+const isProtectedRoute = createRouteMatcher(['/item-upload', '/update-tags'])
+const isProtectedPostRoute = createRouteMatcher(['/item'])
+
+export default clerkMiddleware((auth, req) => {
+    if (isProtectedRoute(req)) auth().protect()
+    if (isProtectedPostRoute(req) && req.method === 'GET') auth().protect()
+})
 
 export const config = {
     // Protects all routes, including api/trpc.
