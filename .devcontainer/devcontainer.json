@@ -1,0 +1,44 @@
+{
+  "name": "NPM & PostgreSQL Dev Container",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "mtxr.sqltools",
+        "mtxr.sqltools-driver-pg"
+      ],
+      "settings": {
+        "sqltools.connections": [
+          {
+            "name": "Local database",
+            "driver": "PostgreSQL",
+            "server": "localhost",
+            "port": 5432,
+            "database": "postgres",
+            "username": "admin",
+            "password": "LocalPasswordOnly"
+          }
+        ]
+      }
+    }
+  },
+  "forwardPorts": [
+    3000,
+    5432
+  ],
+  "portsAttributes": {
+    "3000": {
+      "label": "Application",
+      "onAutoForward": "openPreview"
+    },
+    "5432": {
+      "label": "PostgreSQL port",
+      "onAutoForward": "silent"
+    }
+  },
+  // "updateContentCommand": "pnpm install",
+  // "postCreateCommand": "pnpm dev"
+}
