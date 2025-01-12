@@ -7,7 +7,7 @@ export async function GET(_request: Request, _params: {}) {
         },
     });
 
-    let allTags = [...new Set(results.flatMap((e) => e.tags))];
+    let allTags = [...new Set(results.flatMap((e) => e.tags))].sort();
 
     return Response.json({
         results: allTags,
