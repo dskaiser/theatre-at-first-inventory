@@ -19,3 +19,18 @@ running `pnpm install` in the project directory.
 2. Start the development server by running `pnpm dev`. The output of this
 command will tell you which port your computer is hosting the project on.
 Typically, you will find it at `http://localhost:3000`.
+
+## Initializing the Database
+The first time you run the dev server, you'll need to initialize the database with the following SQL command:
+
+```sql
+CREATE TABLE inventory_items (
+  id serial primary key,
+  name text not null,
+  description text not null,
+  tags text[] not null,
+  image_url text,
+  status text,
+  category text
+);
+```
