@@ -99,6 +99,10 @@ export default function ItemUpload(props: UploadProps) {
             });
     };
 
+    const handleSetUrl = (url: string) => {
+        setImageUrl(url);
+    }
+
     const component_x_padding = "p-5 md:px-20 xl:px-80 transition duration-500";
 
     return (
@@ -160,7 +164,7 @@ export default function ItemUpload(props: UploadProps) {
                         </button>
                     </div>
                 ) : (
-                    <ImageCapture imageCallback={handleImageCapture} />
+                    <ImageCapture imageCallback={handleImageCapture} setUrlCallback={handleSetUrl} />
                 )}
             </div>
 
