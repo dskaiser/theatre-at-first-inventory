@@ -79,10 +79,14 @@ export default async function Page({ params }: { params: { id: number } }) {
                 <ImageCarousel imageList={images}/>
                 <div className="py-10 lg:px-10 bg-white lg:w-[50%] space-y-5 w-full h-full">
                     <div className="flex flex-row justify-between items-center">
-                        <button className="text-black flex shrink-0">
-                            <ArrowLeftCircle />
-                            <div className="pl-2">Back to inventory list</div>
-                        </button>
+                        <a href="/inventory">
+                            <button className="text-black flex shrink-0">
+                                <ArrowLeftCircle />
+                                <div className="pl-2">
+                                    Back to inventory list
+                                </div>
+                            </button>
+                        </a>
                     </div>
                     <form className="w-full h-full flex flex-col gap-3"
                           action={updateItem}>
