@@ -34,3 +34,17 @@ CREATE TABLE inventory_items (
   category text
 );
 ```
+
+## Setting a User as Admin
+In order to perform certain actions (such as editing an item), a user must have the "admin" role.
+
+1. After setting up your Clerk application and at least 1 user, go to your Clerk application "Users" tab.
+2. Select the user you want to make an Admin.
+3. Scroll down to the "Metadata" section and click the "Edit" button for "Public" Metadata.
+4. Ensure that the public metadata JSON includes `"role" : "admin"`. It should look something like this:
+```json
+{
+  "role": "admin"
+}
+```
+5. Click the "Save" button. The user is now an Admin!
