@@ -10,17 +10,18 @@ import {
 import Webcam from "react-webcam";
 import { Camera } from "./buttonGraphics";
 
-interface ImageCaptureProps {
+interface ImageCaptureButtonsProps {
     imageCallback: (imageBlob: Blob) => void;
     setUrlCallback?: (url: string) => void;
+    oldImageUrl?: string;
 }
 
-export default function ImageCapture({ imageCallback, setUrlCallback }: ImageCaptureProps) {
+export default function ImageCaptureButtons({ imageCallback, setUrlCallback, oldImageUrl }: ImageCaptureButtonsProps) {
     const [hasPermission, setHasPermission] = useState(true);
     const [takePhoto, setTakePhoto] = useState(false);
     const [uploadPhoto, setUploadPhoto] = useState(false);
     const [manuallyEnterPhotoUrl, setManuallyEnterPhotoUrl] = useState(false);
-    const [manualPhotoUrl, setManualPhotoUrl] = useState("");
+    const [manualPhotoUrl, setManualPhotoUrl] = useState(oldImageUrl || "");
 
     useEffect(() => {
         navigator.mediaDevices
@@ -79,25 +80,37 @@ export default function ImageCapture({ imageCallback, setUrlCallback }: ImageCap
     return (
         <div className="flex flex-col items-center justify-center">
             <div className="w-full flex flex-row gap-2 mb-3">
-                <button className="px-3 py-1 border border-amber-500 rounded-lg" onClick={() => {
-                    setTakePhoto(true);
-                    setUploadPhoto(false);
-                    setManuallyEnterPhotoUrl(false);
-                    }}>Take Photo</button>
-                <button className="px-3 py-1 border border-amber-500 rounded-lg" onClick={() => {
-                    setTakePhoto(false);
-                    setUploadPhoto(true);
-                    setManuallyEnterPhotoUrl(false);
-                    }}>Upload Photo</button>
-                { process.env.NODE_ENV === "development" && setUrlCallback !== undefined && <>
-                    <button className="px-3 py-1 border border-amber-500 rounded-lg" onClick={() => {
-                        setTakePhoto(false);
+                <button
+                    className="px-3 py-1 border border-amber-500 rounded-lg"
+                    type="button"
+                    onClick={() => {
+                        setTakePhoto(true);
                         setUploadPhoto(false);
-                        setManuallyEnterPhotoUrl(true);
-                        }}>Set Photo URL</button>
-                </> }
+                        setManuallyEnterPhotoUrl(false);
+                    }}
+                >Take Photo</button>
+                <button
+                    className="px-3 py-1 border border-amber-500 rounded-lg"
+                    type="button"
+                    onClick={() => {
+                        setTakePhoto(false);
+                        setUploadPhoto(true);
+                        setManuallyEnterPhotoUrl(false);
+                    }}
+                >Upload Photo</button>
+                {process.env.NODE_ENV === "development" && setUrlCallback !== undefined && <>
+                    <button
+                        className="px-3 py-1 border border-amber-500 rounded-lg"
+                        type="button"
+                        onClick={() => {
+                            setTakePhoto(false);
+                            setUploadPhoto(false);
+                            setManuallyEnterPhotoUrl(true);
+                        }}
+                    >Set Photo URL</button>
+                </>}
             </div>
-            { takePhoto && <><Webcam
+            {takePhoto && <><Webcam
                 audio={false}
                 ref={webcamRef}
                 height={1920}
@@ -106,17 +119,18 @@ export default function ImageCapture({ imageCallback, setUrlCallback }: ImageCap
                 videoConstraints={videoConstraints}
                 className="rounded-xl"
             />
-            <button
-                onClick={capture}
-                className="mt-2 py-3 pr-3 pl-3 rounded-3xl text-gray-600 bg-gray-100 border-4 border-amber-700 hover:bg-gray-600 hover:text-gray-100"
-            >
-                <Camera />
-            </button></> }
-            { uploadPhoto && <>
+                <button
+                    type="button"
+                    onClick={capture}
+                    className="mt-2 py-3 pr-3 pl-3 rounded-3xl text-gray-600 bg-gray-100 border-4 border-amber-700 hover:bg-gray-600 hover:text-gray-100"
+                >
+                    <Camera />
+                </button></>}
+            {uploadPhoto && <>
                 <p>Image uploads must be jpegs.</p>
                 <input type="file" placeholder="Upload file" onChange={fileUpload} />
-            </> }
-            { manuallyEnterPhotoUrl && setUrlCallback !== undefined && <>
+            </>}
+            {manuallyEnterPhotoUrl && setUrlCallback !== undefined && <>
                 <div className="flex flex-col gap-2 w-full">
                     <p>Set the photo URL.</p>
                     <input
@@ -126,9 +140,13 @@ export default function ImageCapture({ imageCallback, setUrlCallback }: ImageCap
                         value={manualPhotoUrl}
                         onChange={(e) => setManualPhotoUrl(e.target.value)}
                     />
-                    <button className="px-3 py-1 border border-amber-500 rounded-lg" onClick={() => {setUrlCallback(manualPhotoUrl);}} >Set URL</button>
+                    <button
+                        className="px-3 py-1 border border-amber-500 rounded-lg"
+                        type="button"
+                        onClick={() => { setUrlCallback(manualPhotoUrl); }}
+                    >Set URL</button>
                 </div>
-            </> }
+            </>}
         </div>
     );
 }
