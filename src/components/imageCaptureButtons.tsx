@@ -16,11 +16,16 @@ interface ImageCaptureButtonsProps {
     oldImageUrl?: string;
 }
 
+enum ImageCaptureMethod {
+    UNSPECIFIED = "unspecified",
+    CAPTURE = "capture",
+    UPLOAD = "upload",
+    MANUAL_URL = "manual_url",
+}
+
 export default function ImageCaptureButtons({ imageCallback, setUrlCallback, oldImageUrl }: ImageCaptureButtonsProps) {
     const [hasPermission, setHasPermission] = useState(true);
-    const [takePhoto, setTakePhoto] = useState(false);
-    const [uploadPhoto, setUploadPhoto] = useState(false);
-    const [manuallyEnterPhotoUrl, setManuallyEnterPhotoUrl] = useState(false);
+    const [imageCaptureMethod, setImageCaptureMethod] = useState<ImageCaptureMethod>(ImageCaptureMethod.UNSPECIFIED);
     const [manualPhotoUrl, setManualPhotoUrl] = useState(oldImageUrl || "");
 
     useEffect(() => {
@@ -84,18 +89,14 @@ export default function ImageCaptureButtons({ imageCallback, setUrlCallback, old
                     className="px-3 py-1 border border-amber-500 rounded-lg"
                     type="button"
                     onClick={() => {
-                        setTakePhoto(true);
-                        setUploadPhoto(false);
-                        setManuallyEnterPhotoUrl(false);
+                        setImageCaptureMethod(ImageCaptureMethod.CAPTURE);
                     }}
                 >Take Photo</button>
                 <button
                     className="px-3 py-1 border border-amber-500 rounded-lg"
                     type="button"
                     onClick={() => {
-                        setTakePhoto(false);
-                        setUploadPhoto(true);
-                        setManuallyEnterPhotoUrl(false);
+                        setImageCaptureMethod(ImageCaptureMethod.UPLOAD);
                     }}
                 >Upload Photo</button>
                 {process.env.NODE_ENV === "development" && setUrlCallback !== undefined && <>
@@ -103,14 +104,12 @@ export default function ImageCaptureButtons({ imageCallback, setUrlCallback, old
                         className="px-3 py-1 border border-amber-500 rounded-lg"
                         type="button"
                         onClick={() => {
-                            setTakePhoto(false);
-                            setUploadPhoto(false);
-                            setManuallyEnterPhotoUrl(true);
+                            setImageCaptureMethod(ImageCaptureMethod.MANUAL_URL);
                         }}
                     >Set Photo URL</button>
                 </>}
             </div>
-            {takePhoto && <><Webcam
+            {imageCaptureMethod === ImageCaptureMethod.CAPTURE && <><Webcam
                 audio={false}
                 ref={webcamRef}
                 height={1920}
@@ -126,11 +125,11 @@ export default function ImageCaptureButtons({ imageCallback, setUrlCallback, old
                 >
                     <Camera />
                 </button></>}
-            {uploadPhoto && <>
+            {imageCaptureMethod === ImageCaptureMethod.UPLOAD && <>
                 <p>Image uploads must be jpegs.</p>
                 <input type="file" placeholder="Upload file" onChange={fileUpload} />
             </>}
-            {manuallyEnterPhotoUrl && setUrlCallback !== undefined && <>
+            {imageCaptureMethod === ImageCaptureMethod.MANUAL_URL && setUrlCallback !== undefined && <>
                 <div className="flex flex-col gap-2 w-full">
                     <p>Set the photo URL.</p>
                     <input
