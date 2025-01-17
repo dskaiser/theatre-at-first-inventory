@@ -1,11 +1,12 @@
-import ImageCarousel from "@/components/imageCarousel";
-import { ArrowLeftCircle } from "@/components/buttonGraphics";
 import { items } from "@/db/schema";
 import db from "@/db/drizzle";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import TagEditor from "@/components/tagEditor";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
+import ItemEdit from "@/components/itemEditForm";
+import { ChevronLeft } from "@/components/buttonGraphics";
 
 async function getAllTags() {
     let results = await db.query.items.findMany({
@@ -14,7 +15,7 @@ async function getAllTags() {
         },
     });
 
-    let allTags = [...new Set(results.flatMap((e) => e.tags))];
+    let allTags = [...new Set(results.flatMap((e) => e.tags))].sort();
     return allTags;
 }
 
@@ -31,8 +32,6 @@ export default async function Page({ params }: { params: { id: number } }) {
         where: eq(items.id, params.id),
     });
 
-    const tags = await getAllTags();
-
     if (!itemData) {
         // TODO: make a proper not found page
         // redirect("/");
@@ -44,6 +43,8 @@ export default async function Page({ params }: { params: { id: number } }) {
             </main>
         );
     }
+
+    const tags = await getAllTags();
 
     let images: string[];
     if (itemData.imageUrl) {
@@ -60,11 +61,12 @@ export default async function Page({ params }: { params: { id: number } }) {
         const name = (formData.get('name') || itemData.name).toString();
         const desc = (formData.get('description') || itemData.desc).toString();
         const category = (formData.get('category') || itemData.category || "").toString();
+        const imageUrl = (formData.get('imageUrl') === "" ? "" : formData.get('imageUrl') || itemData.imageUrl || "").toString();
 
         let result = await db.update(items)
-                             .set({ name, desc, category })
-                             .where(eq(items.id, itemData.id))
-                             .returning();
+            .set({ name, desc, category, imageUrl })
+            .where(eq(items.id, itemData.id))
+            .returning();
 
         revalidatePath(`/item/${itemData.id}`);
         revalidatePath("/list-items");
@@ -74,49 +76,27 @@ export default async function Page({ params }: { params: { id: number } }) {
     }
 
     return (
-        <main className="bg-white">
+        <main className="bg-white w-screen min-h-screen">
+            <Header />
             <div className="p-8 w-full h-full flex flex-col lg:flex-row justify-center items-center">
-                <ImageCarousel imageList={images}/>
                 <div className="py-10 lg:px-10 bg-white lg:w-[50%] space-y-5 w-full h-full">
-                    <div className="flex flex-row justify-between items-center">
-                        <button className="text-black flex shrink-0">
-                            <ArrowLeftCircle />
-                            <div className="pl-2">Back to inventory list</div>
-                        </button>
+                    <div className={"pt-10 pb-5 grid grid-cols divide-y-2"}>
+                        <div className="flex flex-col gap-2 justify-between">
+                            <a href="/inventory" className="flex flex-row gap-2 text-black">
+                                <ChevronLeft />
+                                Back to inventory list
+                            </a>
+                            <div className="first:pt-0 text-left text-sm text-neutral-700">
+                                <div className="first:pt-0 text-left text-4xl text-neutral-700 font-bold">
+                                    Edit Item
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <form className="w-full h-full flex flex-col gap-3"
-                          action={updateItem}>
-                        <input className="text-gray-950 text-2xl rounded-lg border border-amber-400 font-light pl-3 pr-3 py-3 focus:placeholder-gray-800 focus:outline-none"
-                               name="name"
-                               defaultValue={itemData.name}
-                               placeholder="Name"/>                        
-                        <input className="text-gray-950 text-2xl rounded-lg border border-amber-400 font-light pl-3 pr-3 py-3 focus:placeholder-gray-800 focus:outline-none"
-                               name="category"
-                               defaultValue={itemData.category || ""}
-                               placeholder="Category"/>                        
-                        <TagEditor itemId={itemData.id} tags={tags} initialTags={itemData.tags}/>
-
-                        <textarea
-                            className="text-gray-950 rounded-lg border border-amber-400 font-light pl-3 pr-3 py-3 focus:placeholder-gray-800 focus:outline-none"
-                            name="description"
-                            defaultValue={itemData.desc}
-                            placeholder="Description"
-                            // onChange={(e) => props.setDescription(e.target.value)}
-                            style={{
-                                maxHeight: "200px",
-                                height: "200px",
-                                width: "100%",
-                            }}
-                        />
-                        <span className="flex flex-row justify-end">
-                            <button className="text-orange-400 flex border-orange-400 border-2 p-2 rounded-lg"
-                                    type="submit">
-                                Done
-                            </button>
-                        </span>
-                    </form>
+                    <ItemEdit itemData={itemData} allTags={tags} updateItem={updateItem}></ItemEdit>
                 </div>
             </div>
+            <Footer />
         </main>
     );
 }

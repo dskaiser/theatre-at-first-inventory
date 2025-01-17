@@ -22,6 +22,7 @@ export default function ImageCarousel(props: { imageList: string[], className?: 
 
     return (
         <div className={`slider-container flex flex-row items-center ${props.className || ""}`}>
+            { props.imageList.length > 1 && <>
             <button
                 className="cursor-pointer text-white translate-x-16"
                 onClick={prevImage}
@@ -54,6 +55,7 @@ export default function ImageCarousel(props: { imageList: string[], className?: 
                     </svg>
                 }
             </button>
+            </> }
             <ResizeableIMG
                 width={600}
                 height={400}
@@ -62,8 +64,9 @@ export default function ImageCarousel(props: { imageList: string[], className?: 
                         ? props.imageList[currentImageIndex]
                         : ImageNotFound
                 }
-                alt="pics of cookies"
+                alt=""
             />
+            { props.imageList.length > 1 && <>
             <button
                 className="cursor-pointer top-1/2 text-white right-0 -translate-x-16"
                 onClick={nextImage}
@@ -95,6 +98,7 @@ export default function ImageCarousel(props: { imageList: string[], className?: 
                     </svg>
                 }
             </button>
+            </> }
         </div>
     );
 }

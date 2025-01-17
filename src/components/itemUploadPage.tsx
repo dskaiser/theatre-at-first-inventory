@@ -5,7 +5,7 @@ import ItemInput from "@/components/itemInputForm";
 import { InsertItem } from "@/db/schema";
 import { ChevronLeft } from "@/components/buttonGraphics";
 
-import ImageCapture from "@/components/imageCaptureAndUploadComponent";
+import ImageCapture from "./imageCapture";
 import { revalidatePaths } from "@/app/actions";
 import { useRouter } from "next/navigation";
 
@@ -69,36 +69,6 @@ export default function ItemUpload(props: UploadProps) {
         }
     };
 
-    const handleImageCapture = async (blob: Blob) => {
-        const { presignedUrl, imageUrl } = await (
-            await fetch("/upload-presigned-url", {
-                method: "POST",
-                headers: {
-                    "Access-Control-Allow-Origin": "*",
-                }
-            })
-        ).json();
-
-        await fetch(presignedUrl, {
-            method: "PUT",
-            body: blob,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                "Content-Type": blob.type,
-            },
-        })
-            .then(async (response) => {
-                if (!response.ok) {
-                    alert("Upload failed: " + (await response.text()));
-                }
-
-                setImageUrl(imageUrl);
-            })
-            .catch((error: Error) => {
-                alert(`Upload error: ${error}`);
-            });
-    };
-
     const component_x_padding = "p-5 md:px-20 xl:px-80 transition duration-500";
 
     return (
@@ -147,21 +117,7 @@ export default function ItemUpload(props: UploadProps) {
             </div>
 
             <div className={`${component_x_padding} flex justify-start`}>
-                {imageUrl ? (
-                    <div>
-                        <div className="border border-amber-500 p-2 bg-orange-50 rounded-xl">
-                            <img src={imageUrl} alt="" className="rounded-lg" />
-                        </div>
-                        <button
-                            className="block border border-amber-500 bg-orange-50 text-sm font-medium px-2 py-1 rounded-xl mx-auto mt-3 text-orange-700"
-                            onClick={() => setImageUrl("")}
-                        >
-                            Retake
-                        </button>
-                    </div>
-                ) : (
-                    <ImageCapture imageCallback={handleImageCapture} />
-                )}
+                <ImageCapture oldImageUrl={imageUrl} setNewImageUrl={setImageUrl} ></ImageCapture>
             </div>
 
             <div className={`${component_x_padding} flex justify-end py-10`}>

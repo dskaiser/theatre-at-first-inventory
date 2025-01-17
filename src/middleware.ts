@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-const isProtectedRoute = createRouteMatcher(['/item-upload', '/update-tags'])
-const isProtectedPostRoute = createRouteMatcher(['/item'])
+const isProtectedRoute = createRouteMatcher(['/item-upload', '/update-tags', '/edit(.*)'])
+const isProtectedPostRoute = createRouteMatcher(['/item', '/edit(.*)'])
 
 export default clerkMiddleware((auth, req) => {
     if (isProtectedRoute(req)) auth().protect()
