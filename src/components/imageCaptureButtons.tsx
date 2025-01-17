@@ -64,7 +64,7 @@ export default function ImageCaptureButtons({ imageCallback, setUrlCallback, old
 
         const file = files[0];
         file.arrayBuffer().then(arrBuf => {
-            const imgBlob = new Blob([arrBuf], { type: "iamge/jpeg" });
+            const imgBlob = new Blob([arrBuf], { type: "image/jpeg" });
             imageCallback(imgBlob);
         });
     }, [imageCallback]);
